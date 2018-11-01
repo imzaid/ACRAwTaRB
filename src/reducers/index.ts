@@ -1,25 +1,45 @@
+import * as T from 'src/types';
+import * as C from 'src/constants';
 import { defaultState } from '../application-state';
 import { ApplicationState } from '../application-state';
+import { createAction, handleAction, handleActions } from 'redux-actions';
 
-import { IncrementAction, UpdateGreetingAction } from '../action-creators';
-import * as ActionTypes from '../action-types';
+export const updateGreetingAction = createAction(
+  C.UPDATE_GREETING,
+  (payload: { greeting: string }) => {
+    return payload.greeting;
+  }
+);
+export const updateIncrementAction = createAction(
+  C.INCREMENT
+);
 
-type Action = UpdateGreetingAction | IncrementAction;
+const updateGreetingHandler = handleAction(
+  C.UPDATE_GREETING,
+  (state: ApplicationState = defaultState, action: T.UpdateGreetingAction) => {
+    return {
+      ...state,
+      greeting: action.payload,
+    };
+  },
+  defaultState,
+);
 
-const ACTION_HANDLERS = {
-  [ActionTypes.UPDATE_GREETING]: (state: ApplicationState = defaultState, action: UpdateGreetingAction) => ({
-    ...state,
-    greeting: action.greeting,
-  }),
-  [ActionTypes.INCREMENT]: (state: ApplicationState = defaultState, action: IncrementAction) => ({
+const updateIncrementHandler = handleAction(
+  C.INCREMENT,
+  (state: ApplicationState = defaultState, action: T.IncrementAction) => ({
     ...state,
     count: state.count + 1,
   }),
-};
+  defaultState,
+);
 
-const updateStateReducer = (state: ApplicationState = defaultState, action: Action) => {
-  const handler: any = ACTION_HANDLERS[action.type];
-  return handler ? handler(state, action) : state;
-};
+const updateStateReducer = handleActions(
+  new Map([
+    [updateGreetingAction, updateGreetingHandler],
+    [updateIncrementAction, updateIncrementHandler],
+  ]) as any,
+  defaultState
+);
 
 export default updateStateReducer;
