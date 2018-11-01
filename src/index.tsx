@@ -15,7 +15,14 @@ import { NotFound404 } from 'src/components/NotFound404';
 
 import updateState from 'src/reducers/index';
 
-const store = createStore(updateState);
+declare var window: any;
+const store = createStore(
+  updateState,
+  process.env.NODE_ENV === 'development' &&
+  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ &&
+  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__()
+);
+
 const history = createBrowserHistory();
 
 ReactDOM.render(
